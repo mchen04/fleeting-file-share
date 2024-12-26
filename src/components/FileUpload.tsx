@@ -1,17 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, X, Check, Copy, Link } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { toast } from 'sonner';
 import { Card } from './ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
+import UploadSettings from './upload/UploadSettings';
+import UploadResult from './upload/UploadResult';
+import { simulateUpload } from './upload/uploadUtils';
 
 interface FileUploadProps {
   maxSize?: number;
@@ -34,7 +30,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 10 * 1024 * 1024 }) =
         return;
       }
       setFile(selectedFile);
-      simulateUpload(selectedFile);
     }
   }, [maxSize]);
 
@@ -43,33 +38,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 10 * 1024 * 1024 }) =
     maxFiles: 1,
     multiple: false,
   });
-
-  const simulateUpload = (file: File) => {
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setUploadComplete(true);
-          setShareableLink(`https://share.temp/${Math.random().toString(36).substring(7)}`);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 500);
-  };
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(shareableLink);
-      toast.success('Link copied to clipboard!');
-    } catch (err) {
-      toast.error('Failed to copy link');
-    }
-  };
 
   const resetUpload = () => {
     setFile(null);
@@ -131,43 +99,15 @@ const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 10 * 1024 * 1024 }) =
 
           {!isUploading && !uploadComplete && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Expires after</label>
-                  <Select
-                    value={expiryTime}
-                    onValueChange={setExpiryTime}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select expiry time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="24h">24 hours</SelectItem>
-                      <SelectItem value="48h">48 hours</SelectItem>
-                      <SelectItem value="7d">7 days</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Download limit</label>
-                  <Select
-                    value={downloadLimit}
-                    onValueChange={setDownloadLimit}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select download limit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1 download</SelectItem>
-                      <SelectItem value="5">5 downloads</SelectItem>
-                      <SelectItem value="10">10 downloads</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              <UploadSettings
+                expiryTime={expiryTime}
+                setExpiryTime={setExpiryTime}
+                downloadLimit={downloadLimit}
+                setDownloadLimit={setDownloadLimit}
+              />
               <Button
                 className="w-full"
-                onClick={() => simulateUpload(file)}
+                onClick={() => simulateUpload(file, setUploadProgress, setIsUploading, setUploadComplete, setShareableLink)}
               >
                 Generate Shareable Link
               </Button>
@@ -175,32 +115,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 10 * 1024 * 1024 }) =
           )}
 
           {uploadComplete && shareableLink && (
-            <div className="space-y-4 slide-up">
-              <div className="flex items-center space-x-2 p-3 bg-secondary rounded-lg">
-                <Link className="w-4 h-4 flex-shrink-0" />
-                <p className="text-sm flex-1 truncate">{shareableLink}</p>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={copyToClipboard}
-                  className="flex-shrink-0"
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-              </div>
-              <div className="flex justify-between text-sm text-gray-500">
-                <p>Expires in: {expiryTime}</p>
-                <p>Downloads remaining: {downloadLimit}</p>
-              </div>
-              <div className="flex justify-center">
-                <Button
-                  variant="outline"
-                  onClick={resetUpload}
-                >
-                  Upload Another File
-                </Button>
-              </div>
-            </div>
+            <UploadResult
+              shareableLink={shareableLink}
+              expiryTime={expiryTime}
+              downloadLimit={downloadLimit}
+              onReset={resetUpload}
+            />
           )}
         </div>
       )}
