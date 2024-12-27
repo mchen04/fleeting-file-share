@@ -17,7 +17,10 @@ export const simulateUpload = (
       setUploadProgress(100);
       setIsUploading(false);
       setUploadComplete(true);
-      setShareableLink(`https://share.temp/${Math.random().toString(36).substring(7)}`);
+      // Generate a link using the current domain
+      const fileId = Math.random().toString(36).substring(7);
+      const currentDomain = window.location.origin;
+      setShareableLink(`${currentDomain}/download/${fileId}`);
     } else {
       setUploadProgress(progress);
     }
