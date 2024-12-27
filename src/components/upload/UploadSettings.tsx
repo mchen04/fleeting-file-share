@@ -39,9 +39,6 @@ const UploadSettings: React.FC<UploadSettingsProps> = ({
               <SelectItem value="24h">24 hours</SelectItem>
               <SelectItem value="48h">48 hours</SelectItem>
               <SelectItem value="72h">72 hours</SelectItem>
-              <SelectItem value="7d">7 days</SelectItem>
-              <SelectItem value="14d">14 days</SelectItem>
-              <SelectItem value="30d">30 days</SelectItem>
             </SelectContent>
           </Select>
         </div>
