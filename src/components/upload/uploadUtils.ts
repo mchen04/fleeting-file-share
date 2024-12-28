@@ -20,21 +20,14 @@ export const uploadFile = async (
     formData.append('downloadLimit', downloadLimit);
 
     // Call the upload function
-    const response = await fetch(`${supabase.supabaseUrl}/functions/v1/upload-file`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${supabase.supabaseKey}`,
-      },
+    const { data, error } = await supabase.functions.invoke('upload-file', {
       body: formData,
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to upload file');
+    if (error) {
+      throw error;
     }
 
-    const { fileId } = await response.json();
-    
     // Set progress to 100% and complete
     setUploadProgress(100);
     setIsUploading(false);
@@ -42,7 +35,7 @@ export const uploadFile = async (
 
     // Generate shareable link
     const currentDomain = window.location.origin;
-    setShareableLink(`${currentDomain}/download/${fileId}`);
+    setShareableLink(`${currentDomain}/download/${data.fileId}`);
   } catch (error) {
     console.error('Upload error:', error);
     setIsUploading(false);

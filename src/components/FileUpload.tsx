@@ -13,7 +13,7 @@ interface FileUploadProps {
   maxSize?: number;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 10 * 1024 * 1024 }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 150 * 1024 * 1024 }) => {
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
