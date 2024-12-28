@@ -9,7 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      files: {
+        Row: {
+          content_type: string | null
+          created_at: string | null
+          deleted: boolean | null
+          downloads: number | null
+          expires_at: string
+          file_path: string
+          filename: string
+          id: string
+          max_downloads: number
+          size: number | null
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string | null
+          deleted?: boolean | null
+          downloads?: number | null
+          expires_at: string
+          file_path: string
+          filename: string
+          id?: string
+          max_downloads: number
+          size?: number | null
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string | null
+          deleted?: boolean | null
+          downloads?: number | null
+          expires_at?: string
+          file_path?: string
+          filename?: string
+          id?: string
+          max_downloads?: number
+          size?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Card } from './ui/card';
 import UploadSettings from './upload/UploadSettings';
 import UploadResult from './upload/UploadResult';
-import { simulateUpload } from './upload/uploadUtils';
+import { uploadFile } from './upload/uploadUtils';
 
 interface FileUploadProps {
   maxSize?: number;
@@ -45,6 +45,25 @@ const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 10 * 1024 * 1024 }) =
     setIsUploading(false);
     setUploadComplete(false);
     setShareableLink('');
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    try {
+      await uploadFile(
+        file,
+        expiryTime,
+        downloadLimit,
+        setUploadProgress,
+        setIsUploading,
+        setUploadComplete,
+        setShareableLink
+      );
+    } catch (error) {
+      toast.error('Failed to upload file. Please try again.');
+      resetUpload();
+    }
   };
 
   return (
@@ -107,7 +126,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ maxSize = 10 * 1024 * 1024 }) =
               />
               <Button
                 className="w-full"
-                onClick={() => simulateUpload(file, setUploadProgress, setIsUploading, setUploadComplete, setShareableLink)}
+                onClick={handleUpload}
               >
                 Generate Shareable Link
               </Button>
