@@ -33,7 +33,9 @@ const UploadSettings: React.FC<UploadSettingsProps> = ({
               <SelectValue placeholder="Select expiry time" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="0.5h">30 minutes</SelectItem>
               <SelectItem value="1h">1 hour</SelectItem>
+              <SelectItem value="3h">3 hours</SelectItem>
               <SelectItem value="6h">6 hours</SelectItem>
               <SelectItem value="12h">12 hours</SelectItem>
               <SelectItem value="24h">24 hours</SelectItem>
