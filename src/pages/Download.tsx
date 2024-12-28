@@ -27,30 +27,40 @@ const DownloadPage = () => {
     if (!fileInfo) return;
 
     try {
-      // Get the file from storage
-      const { data, error } = await supabase.storage
+      // First, try to update the download count
+      const { error: updateError } = await supabase
+        .from('files')
+        .update({ downloads: (fileInfo.downloads || 0) + 1 })
+        .eq('id', fileId)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('Failed to update download count:', updateError);
+        toast.error('Failed to process download. Please try again.');
+        return;
+      }
+
+      // If update successful, proceed with download
+      const { data, error: downloadError } = await supabase.storage
         .from('files')
         .download(fileInfo.file_path);
 
-      if (error) throw error;
+      if (downloadError) {
+        console.error('Download error:', downloadError);
+        toast.error('Failed to download file. Please try again.');
+        return;
+      }
 
-      // Create a download link
+      // Create download link
       const url = URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
-      a.download = fileInfo.filename; // Use original filename
+      a.download = fileInfo.filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
-      // Update download count
-      const { error: updateError } = await supabase
-        .from('files')
-        .update({ downloads: (fileInfo.downloads || 0) + 1 })
-        .eq('id', fileId);
-
-      if (updateError) throw updateError;
 
       toast.success('Download started!');
     } catch (error) {
