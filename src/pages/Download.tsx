@@ -43,24 +43,19 @@ const DownloadPage = () => {
     if (!fileInfo) return;
 
     try {
-      // First update the download count
+      // First increment the download count
       const { error: updateError } = await supabase
         .from('files')
         .update({ 
           downloads: (fileInfo.downloads || 0) + 1 
         })
-        .eq('id', fileId)
-        .select()
-        .single();
+        .eq('id', fileId);
 
       if (updateError) {
         console.error('Failed to update download count:', updateError);
         toast.error('Failed to process download. Please try again.');
         return;
       }
-
-      // Refetch the file info to get updated download count
-      await refetch();
 
       // Then attempt to download the file
       const { data, error: downloadError } = await supabase.storage
@@ -82,6 +77,9 @@ const DownloadPage = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      // Refetch the file info to get updated download count
+      await refetch();
 
       toast.success('Download started!');
     } catch (error) {
