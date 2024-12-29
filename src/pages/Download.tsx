@@ -117,7 +117,20 @@ const DownloadPage = () => {
 
   const expiresAt = new Date(fileInfo.expires_at);
   const now = new Date();
-  const hoursRemaining = Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60)));
+  const minutesRemaining = Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60)));
+  
+  // Format the time remaining in a human-readable way
+  const formatTimeRemaining = (minutes: number) => {
+    if (minutes < 60) {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    if (remainingMinutes === 0) {
+      return `${hours} hour${hours !== 1 ? 's' : ''}`;
+    }
+    return `${hours} hour${hours !== 1 ? 's' : ''} and ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
@@ -132,7 +145,7 @@ const DownloadPage = () => {
             Downloads remaining: {downloadsRemaining}
           </p>
           <p className="text-center text-sm text-gray-500">
-            Expires in: {hoursRemaining} hours
+            Expires in: {formatTimeRemaining(minutesRemaining)}
           </p>
         </div>
         <div className="flex justify-center">
