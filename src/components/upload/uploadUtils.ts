@@ -16,7 +16,13 @@ export const uploadFile = async (
     // Create form data
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('expiryTime', expiryTime.replace(/[^0-9]/g, '')); // Convert "24h" to "24"
+    
+    // Convert time string to hours (handle "0.5h" correctly)
+    const hours = expiryTime.endsWith('h') 
+      ? parseFloat(expiryTime.replace('h', ''))
+      : parseFloat(expiryTime);
+    
+    formData.append('expiryTime', hours.toString());
     formData.append('downloadLimit', downloadLimit);
 
     // Call the upload function
