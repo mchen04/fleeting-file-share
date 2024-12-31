@@ -9,7 +9,7 @@ A secure and user-friendly web application for temporary file sharing with autom
 - **Download Limits**: Control the number of times a file can be downloaded (1 to unlimited)
 - **Automatic Cleanup**: Files are automatically removed after expiration or reaching download limits
 - **Shareable Links**: Generate unique links for easy file sharing
-
+ 
 ## Usage
 
 1. **Upload a File**:
